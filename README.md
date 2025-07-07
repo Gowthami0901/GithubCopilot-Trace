@@ -4,20 +4,19 @@
 
 1. Open **VS Code**
 2. Go to the **Extensions panel** (`Ctrl+Shift+X`)
-3. Search for:
+3. Search for and install:
 
    * **GitHub Copilot**
-   * *(Optional)* **GitHub Copilot Chat**
-    
-4. Install and **enable** both if not already
+   * **GitHub Copilot Chat**
+   * 
+4. Make sure both extensions are **enabled**
 
 ---
 
-### Step 2: Enable Trace Logging in `settings.json`
+### Step 2: Enable Trace Logging via `settings.json` (Persistent Method)
 
-1. Press `Ctrl+Shift+P` → Search for:
-   **`Preferences: Open Settings (JSON)`**
-2. Add the following configuration:
+1. Press `Ctrl+Shift+P` → Search: **`Preferences: Open Settings (JSON)`**
+2. Add this block (merge into your existing settings if needed):
 
 ```json
 {
@@ -30,31 +29,44 @@
 }
 ```
 
-> If your file already has settings, insert commas appropriately.
+> This enables trace-level logging every time VS Code starts.
 
 ---
 
 ### Step 3: Restart VS Code
 
-After editing `settings.json`:
-
-* Fully close and reopen **VS Code** to apply changes.
-
----
-
-### Step 4: Open Output Panel to View Logs
-
-1. Go to: **View → Output**
-2. In the **dropdown menu** (top-right), select:
-
-   * ✅ `GitHub Copilot`
-   * ✅ `GitHub Copilot Chat`
+* **Close all windows** of VS Code
+* **Reopen** to apply the new log settings
 
 ---
 
-### Step 5: Check for Trace Logs
+### Step 4: Enable Trace Logging via Command Palette
 
-When Copilot is triggered (e.g., by typing code like `def greet(name):`), you should see:
+This sets the log level **instantly**, valid for the current session:
+
+1. Press `Ctrl+Shift+P` (or `Cmd+Shift+P` on macOS)
+2. Type: **`Developer: Set Log Level`**
+3. Select `Trace` from the dropdown
+
+Now, all extensions (including Copilot) log at trace level until VS Code is closed.
+
+---
+
+### Step 5: View Logs in the Output Panel
+
+1. Press `Ctrl+Shift+P` → Type: **`Output: Show Output Channels`**
+   *(Or use menu: View → Output)*
+2. In the **dropdown list** in the Output panel (top-right corner):
+
+   * Choose **`GitHub Copilot`**
+   * Or **`GitHub Copilot Chat`**
+
+---
+
+### Step 6: Check for Trace Logs
+
+Start typing code (e.g., `def greet(name):`) to trigger Copilot.
+Then look for trace-like entries in the Output panel:
 
 ```
 [trace] Sending request to Copilot...
@@ -62,33 +74,40 @@ When Copilot is triggered (e.g., by typing code like `def greet(name):`), you sh
 [trace] Completion: return f"Hello, {name}"
 ```
 
-If you only see `[info]` or no trace entries, go to Developer Tools.
+> If you see only `[info]`, that’s also fine—Copilot is working.
 
 ---
 
-### Step 6: (Optional) Use Developer Tools for Raw Logs
+### Step 7: (Optional) Use Developer Tools for Full Internal Logs
 
-1. Press `Ctrl+Shift+P`
-2. Run: **`Developer: Toggle Developer Tools`**
-3. Click the **Console** tab
-4. Interact with Copilot → Trace and API logs will appear here too
-
----
-
-### Expected Log Types
-
-| Log Type    | Meaning                                      |
-| ----------- | -------------------------------------------- |
-| `[trace]`   | Full details of request, prompt, token usage |
-| `[info]`    | Basic operation status (working, idle, etc.) |
-| `[warning]` | Something didn’t go as expected              |
-| `[error]`   | Critical failure or API issue                |
+1. Press `Ctrl+Shift+P` → Run: **`Developer: Toggle Developer Tools`**
+2. Click the **Console** tab
+3. Trigger Copilot completions → you’ll see raw logs, including request/response, model metadata, token count, etc.
 
 ---
 
-### Notes
+### Switch Between Copilot Log Channels
 
-* Trace logs **help debug completions** by showing prompt/response round trips.
-* They’re especially helpful when working with **custom APIs, Copilot Chat**, or **slow completions**.
-* These logs are **local** — nothing is sent to GitHub for debugging unless you opt in.
+In the **Output panel dropdown**, you can switch between:
 
+* `GitHub Copilot` (main suggestions)
+* `GitHub Copilot Chat` (chat features)
+
+---
+
+### Log Type Reference
+
+| Log Type    | Description                                    |
+| ----------- | ---------------------------------------------- |
+| `[trace]`   | Full request/response details (prompt, tokens) |
+| `[info]`    | Basic events (completion fetched, chat loaded) |
+| `[warning]` | Non-critical issues (e.g., fallback used)      |
+| `[error]`   | Critical errors or failed requests             |
+
+---
+
+## Notes
+
+* GitHub limits trace output for privacy and performance. You may not see full `[trace]` in the Output panel, but detailed logs often appear in **Developer Tools Console**.
+* This is helpful when working with **Copilot Chat**, **slow responses**, or **debugging model behavior**.
+* All logs are **local** unless telemetry is manually enabled.
